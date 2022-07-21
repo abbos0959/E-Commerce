@@ -12,7 +12,16 @@ class ApiFeatures {
            }
          : {};
       console.log(abbos);
+
       this.query = this.query.find({ ...abbos });
+      return this;
+   }
+
+   filter() {
+      const querCopy = { ...this.queryStr };
+      const remove = ["abbos", "limit", "page"];
+      remove.forEach((i) => delete querCopy[i]);
+      this.query = this.query.find(querCopy);
       return this;
    }
 }
