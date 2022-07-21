@@ -6,10 +6,15 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 // hamma pproductlarni chiqazish
 const getAllProducts = catchErrorAsync(async (req, res) => {
-   const features = new ApiFeatures(ProductModel.find(), req.query).search().filter();
+   const resultperpage = 2;
+   const features = new ApiFeatures(ProductModel.find(), req.query)
+      .search()
+      .filter()
+      .pagination(resultperpage);
    const data = await features.query;
 
    res.status(200).json({
+      soni: data.length,
       data,
    });
 });
