@@ -1,12 +1,12 @@
-require("dotenv").config()
-const express=require("express")
-const app =express()
-app.use(express.json())
-const productRouter=require("./router/productRouter")
+require("dotenv").config();
+const express = require("express");
+const app = express();
+app.use(express.json());
+const productRouter = require("./router/productRouter");
+const errorController=require("./controller/errorController")
+
+app.use("/api/v1", productRouter);
 
 
-app.use("/api/v1",productRouter)
-
-
-
-module.exports=app
+app.use(errorController)
+module.exports = app;

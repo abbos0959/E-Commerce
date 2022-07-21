@@ -1,44 +1,51 @@
 const ProductModel = require("../model/productModel");
+const AppError=require("../utils/appError")
+const catchErrorAsync=require("../utils/catchUtil")
 
 // hamma pproductlarni chiqazish
-const getAllProducts = async (req, res) => {
+const getAllProducts = catchErrorAsync(async (req, res) => {
    const data = await ProductModel.find();
 
    res.status(200).json({
       data,
-      message: "route yaratildi",
+      
    });
-};
-
+});
 //bitta productni id orqali topish
 
-const getProduct = async (req, res) => {
+const getProduct = catchErrorAsync(async (req, res, next) => {
    const data = await ProductModel.findById(req.params.id);
+
+   if (!data) {
+      return next(new AppError("bunday product mavjud emas", 404));
+   }
    res.status(200).json({
       data,
    });
-};
+});
 
 //yangi product yaratish admin
-const createProduct = async (req, res) => {
-   const data = await ProductModel.create(req.body);
-   res.status(201).json({
-      data,
-   });
-};
-const deleteProduct = async (req, res) => {
-   const data = await ProductModel.findByIdAndDelete(req.params.id);
-   res.status(200).json({
-      message: "product o`chirildi",
-   });
-};
+const createProduct = catchErrorAsync(async (req, res) => {
+    const data = await ProductModel.create(req.body);
+    res.status(201).json({
+       data,
+    });
+ })
+const deleteProduct = catchErrorAsync(
+    async (req, res) => {
+        const data = await ProductModel.findByIdAndDelete(req.params.id);
+        res.status(200).json({
+           message: "product o`chirildi",
+        });
+     }
+)
 
-const UpdateProduct = async (req, res) => {
-   const data = await ProductModel.findByIdAndUpdate(req.params.id, req.body);
-
-   res.status(200).json({
-      message: "update product",
-      data,
-   });
-};
+const UpdateProduct = catchErrorAsync(async (req, res) => {
+    const data = await ProductModel.findByIdAndUpdate(req.params.id, req.body);
+ 
+    res.status(200).json({
+       message: "update product",
+       data,
+    });
+ })
 module.exports = { getAllProducts, getProduct, createProduct, deleteProduct, UpdateProduct };
