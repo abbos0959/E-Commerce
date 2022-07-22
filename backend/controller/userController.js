@@ -3,6 +3,7 @@ const catchErrorAsync = require("../utils/catchUtil");
 const AppError = require("../utils/appError");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const jwtToken = require("../utils/jwtToken");
 
 //registratsiya qilish
 
@@ -20,12 +21,7 @@ const registerUser = catchErrorAsync(async (req, res, next) => {
          url: "profil image",
       },
    });
-   const token = jwt.sign({ id: User._id }, "secret", { expiresIn: "1d" });
-
-   res.status(200).json({
-      user,
-      token,
-   });
+   jwtToken(user, 200, res);
 });
 
 const Login = catchErrorAsync(async (req, res, next) => {
@@ -45,12 +41,7 @@ const Login = catchErrorAsync(async (req, res, next) => {
    if (!comparePassword) {
       return next(new AppError("parol yoki email xato", 401));
    }
-
-   const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "1d" });
-   res.status(200).json({
-      user,
-      token,
-   });
+   jwtToken(user, 200, res);
 });
 
 module.exports = { registerUser, Login };
