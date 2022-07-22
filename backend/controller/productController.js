@@ -6,7 +6,6 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 // hamma pproductlarni chiqazish
 const getAllProducts = catchErrorAsync(async (req, res) => {
-    
    const resultperpage = 6;
    const features = new ApiFeatures(ProductModel.find(), req.query)
       .search()
@@ -34,6 +33,8 @@ const getProduct = catchErrorAsync(async (req, res, next) => {
 
 //yangi product yaratish admin
 const createProduct = catchErrorAsync(async (req, res) => {
+   req.body.user = req.user.id;
+
    const data = await ProductModel.create(req.body);
    res.status(201).json({
       data,
