@@ -6,7 +6,8 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 // hamma pproductlarni chiqazish
 const getAllProducts = catchErrorAsync(async (req, res) => {
-   const resultperpage = 2;
+    
+   const resultperpage = 6;
    const features = new ApiFeatures(ProductModel.find(), req.query)
       .search()
       .filter()

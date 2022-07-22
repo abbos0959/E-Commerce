@@ -8,11 +8,12 @@ const jwtToken = require("../utils/jwtToken");
 //registratsiya qilish
 
 const registerUser = catchErrorAsync(async (req, res, next) => {
-   const { name, email, password } = req.body;
+   const { name, email, password,role } = req.body;
 
    //    const HashPassword = await bcrypt.hash(password, 10);
 
    const user = await User.create({
+      role,
       name,
       email,
       password,
@@ -44,4 +45,15 @@ const Login = catchErrorAsync(async (req, res, next) => {
    jwtToken(user, 200, res);
 });
 
-module.exports = { registerUser, Login };
+const Logout = catchErrorAsync(async (req, res) => {
+   res.clearCookie("token", null, {
+      maxAge: new Date(Date.now()),
+      httpOnly: true,
+   });
+   res.status(200).json({
+      message: true,
+      message: "Logout User",
+   });
+});
+
+module.exports = { registerUser, Login, Logout };
