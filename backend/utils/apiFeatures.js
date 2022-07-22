@@ -20,7 +20,8 @@ class ApiFeatures {
    filter() {
       const querCopy = { ...this.queryStr };
       const remove = ["abbos", "limit", "page"];
-      remove.forEach((i) => delete querCopy[i]);
+      remove.forEach((i) => delete querCopy[i]); 
+      
 
       //advanced filter qilish
       let queryStr = JSON.stringify(querCopy);
