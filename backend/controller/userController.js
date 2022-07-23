@@ -138,8 +138,23 @@ const updatePassword = catchErrorAsync(async (req, res, next) => {
       return next(new AppError("parollar bir biriga teng emas", 400));
    }
    user.password = req.body.newPassword;
- await user.save()
-   sendToken(user,200,res)
+   await user.save();
+   sendToken(user, 200, res);
+});
+
+const UpdateProfile = catchErrorAsync(async (req, res, next) => {
+   const Update = {
+      name: req.body.name,
+      email: req.body.email,
+   };
+   const user = await User.findByIdAndUpdate(req.user.id, Update, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+   });
+   res.status(200).json({
+      status:true
+   })
 });
 module.exports = {
    registerUser,
@@ -149,4 +164,5 @@ module.exports = {
    resetPassword,
    getUserDetails,
    updatePassword,
+   UpdateProfile,
 };

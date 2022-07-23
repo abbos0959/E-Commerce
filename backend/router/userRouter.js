@@ -9,6 +9,7 @@ router.route("/logout").get(UserController.Logout)
 router.route("/password/forgot").post(UserController.ForgotPassword)
 router.route("/password/reset/:token").patch(UserController.resetPassword)
 router.route("/me").get(Isauthentication,UserController.getUserDetails)
+router.route("/me/update").patch(Isauthentication,UserController.UpdateProfile)
 router.route("/password/update").patch(Isauthentication,UserController.updatePassword)
 
 module.exports=router
