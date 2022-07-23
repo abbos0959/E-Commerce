@@ -104,7 +104,6 @@ const resetPassword = catchErrorAsync(async (req, res, next) => {
    });
    console.log(user);
    if (!user) {
-      
       return next(new AppError("tokenda hatolik mavjud", 404));
    }
    if (req.body.password !== req.body.confirmPassword) {
@@ -119,4 +118,35 @@ const resetPassword = catchErrorAsync(async (req, res, next) => {
    sendToken(user, 200, res);
 });
 
-module.exports = { registerUser, Login, Logout, ForgotPassword, resetPassword };
+const getUserDetails = catchErrorAsync(async (req, res, next) => {
+   const user = await User.findById(req.user.id);
+   res.status(200).json({
+      message: true,
+      user,
+   });
+});
+
+const updatePassword = catchErrorAsync(async (req, res, next) => {
+   const user = await User.findById(req.user.id);
+
+   const comparePassword = await bcrypt.compare(req.body.OldPassword, user.password);
+   if (!comparePassword) {
+      return next(new AppError("parol yoki email xato", 401));
+   }
+
+   if (req.body.newPassword !== req.body.confirmPassword) {
+      return next(new AppError("parollar bir biriga teng emas", 400));
+   }
+   user.password = req.body.newPassword;
+ await user.save()
+   sendToken(user,200,res)
+});
+module.exports = {
+   registerUser,
+   Login,
+   Logout,
+   ForgotPassword,
+   resetPassword,
+   getUserDetails,
+   updatePassword,
+};
