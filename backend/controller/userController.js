@@ -4,11 +4,14 @@ const AppError = require("../utils/appError");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtToken = require("../utils/jwtToken");
+const sendEmail = require("../utils/sendEmail.js");
+const crypto = require("crypto");
+const sendToken = require("../utils/jwtToken");
 
 //registratsiya qilish
 
 const registerUser = catchErrorAsync(async (req, res, next) => {
-   const { name, email, password,role } = req.body;
+   const { name, email, password, role } = req.body;
 
    //    const HashPassword = await bcrypt.hash(password, 10);
 
@@ -56,4 +59,64 @@ const Logout = catchErrorAsync(async (req, res) => {
    });
 });
 
-module.exports = { registerUser, Login, Logout };
+const ForgotPassword = catchErrorAsync(async (req, res, next) => {
+   const user = await User.findOne({ email: req.body.email });
+   if (!user) {
+      return next(new AppError("bunday user topilmadi", 404));
+   }
+
+   //resetToken yaratish
+   const resetToken = user.getResetPasswordToken();
+   await user.save({ validateBeforeSave: false });
+
+   //url yaratish
+
+   const resetPasswordUrl = `${req.protocol}://${req.get(
+      "host"
+   )}/api/v1/password/reset/${resetToken}`;
+
+   const message = `sizning  parolingiz  tiklash tokeni ${resetPasswordUrl}`;
+
+   try {
+      await sendEmail({
+         email: user.email,
+         subject: "parolingizni tiklash tokeni",
+         message,
+      });
+      res.status(200).json({
+         message: "emailga token yuborildi",
+      });
+   } catch (error) {
+      (user.resetPasswordToken = undefined), (user.resetPasswordExpire = undefined);
+      await user.save({ validateBeforeSave: false });
+      return next(new AppError("token yuborilmadi"));
+   }
+});
+// reset password
+const resetPassword = catchErrorAsync(async (req, res, next) => {
+   //token olamiz
+
+   const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+   const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+   });
+   console.log(user);
+   if (!user) {
+      
+      return next(new AppError("tokenda hatolik mavjud", 404));
+   }
+   if (req.body.password !== req.body.confirmPassword) {
+      return next(new AppError("parollar bir hil emas", 401));
+   }
+   user.password = req.body.password;
+   user.confirmPassword = req.body.confirmPassword;
+   user.resetPasswordExpire = undefined;
+   user.resetPasswordToken = undefined;
+
+   await user.save();
+   sendToken(user, 200, res);
+});
+
+module.exports = { registerUser, Login, Logout, ForgotPassword, resetPassword };
