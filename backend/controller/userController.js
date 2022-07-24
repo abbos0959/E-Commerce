@@ -153,9 +153,26 @@ const UpdateProfile = catchErrorAsync(async (req, res, next) => {
       useFindAndModify: false,
    });
    res.status(200).json({
-      status:true
-   })
+      status: true,
+   });
 });
+
+const getAllUser = catchErrorAsync(async (req, res, next) => {
+   const users = await User.find();
+   res.status(200).json({
+      users,
+   });
+});
+const getSingleUser = catchErrorAsync(async (req, res, next) => {
+   const user = await User.findById(req.params.id);
+   if (!user) {
+      return next(new AppError("bunday user mavjud emas", 404));
+   }
+   res.status(200).json({
+      user,
+   });
+});
+
 module.exports = {
    registerUser,
    Login,
@@ -165,4 +182,6 @@ module.exports = {
    getUserDetails,
    updatePassword,
    UpdateProfile,
+   getAllUser,
+   getSingleUser,
 };
