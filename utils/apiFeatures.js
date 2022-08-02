@@ -1,3 +1,5 @@
+const { model } = require("mongoose");
+
 class ApiFeatures {
    constructor(query, queryStr) {
       this.query = query;

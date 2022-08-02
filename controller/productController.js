@@ -6,7 +6,7 @@ const ApiFeatures = require("../utils/apiFeatures");
 
 // hamma pproductlarni chiqazish
 const getAllProducts = catchErrorAsync(async (req, res) => {
-   const resultperpage = 2;
+   const resultperpage = 6;
    const features = new ApiFeatures(ProductModel.find(), req.query)
       .search()
       .filter()
@@ -33,6 +33,8 @@ const getProduct = catchErrorAsync(async (req, res, next) => {
 
 //yangi product yaratish admin
 const createProduct = catchErrorAsync(async (req, res) => {
+   req.body.user = req.user.id;
+
    const data = await ProductModel.create(req.body);
    res.status(201).json({
       data,
@@ -53,4 +55,49 @@ const UpdateProduct = catchErrorAsync(async (req, res) => {
       data,
    });
 });
-module.exports = { getAllProducts, getProduct, createProduct, deleteProduct, UpdateProduct };
+
+const createProductReview = catchErrorAsync(async (req, res, next) => {
+   const { rating, comment, productId } = req.body;
+   const review = {
+      user: req.user_id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+   };
+
+   const product = await ProductModel.findById(productId);
+
+   const isReviewed = product.reviews.find(
+      (rev) => rev.user.toString() === req.user._id.toString()
+   );
+
+   if (isReviewed) {
+      product.reviews.forEach((rev) => {
+         if (rev.user.toString() === req.user._id.toString())
+            (rev.rating = rating), (rev.comment = comment);
+      });
+   } else {
+      product.reviews.push(review);
+      product.numOfReviews = product.reviews.length;
+   }
+   let avg = 0;
+   product.reviews.forEach((rev) => {
+      avg +=  rev.rating;
+   });
+   console.log(avg);
+
+   product.ratings = avg / product.reviews.length;
+   console.log(product.ratings);
+   await product.save({ validateBeforeSave: false });
+   res.status(200).json({
+      success: true,
+   });
+});
+module.exports = {
+   getAllProducts,
+   getProduct,
+   createProduct,
+   deleteProduct,
+   UpdateProduct,
+   createProductReview,
+};

@@ -3,17 +3,18 @@ const productSchema = new mongoose.Schema({
    name: {
       type: String,
       required: [true, "Iltimos product kiriting"],
+      trim:true
    },
    description: {
       type: String,
       required: [true, "Iltimos description Kiriting"],
    },
    price: {
-      type: String,
+      type: Number,
       required: [true, "Iltimos Price Kiriting"],
       maxLength: [8, "pricening maximal uzunligi 8 belgidan iborat"],
    },
-   rating: {
+   ratings: {
       type: Number,
       default: 0,
    },
@@ -45,6 +46,10 @@ const productSchema = new mongoose.Schema({
    },
    reviews: [
       {
+         user: {
+            type: mongoose.Schema.ObjectId,
+            ref: "user",
+         },
          name: {
             type: String,
             required: true,
@@ -59,10 +64,16 @@ const productSchema = new mongoose.Schema({
          },
       },
    ],
+
+   user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "user",
+   },
+
    createdAt: {
       type: Date,
       default: Date.now,
    },
 });
 
-module.exports=mongoose.model("Product",productSchema)
+module.exports = mongoose.model("Product", productSchema);

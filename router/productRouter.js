@@ -1,8 +1,21 @@
-const express=require("express")
-const router=express.Router()
-const Products=require("../controller/productController")
-router.route("/products").get(Products.getAllProducts).post(Products.createProduct)
-router.route("/products/:id").get(Products.getProduct)
-router.route("/products/:id").delete(Products.deleteProduct).patch(Products.UpdateProduct)
+const express = require("express");
 
-module.exports=router
+const router = express.Router();
+const Products = require("../controller/productController");
+const { Isauthentication, authoriseRoles } = require("../middleware/isAuthentication");
+
+router.route("/products").get(Isauthentication, authoriseRoles("admin"), Products.getAllProducts);
+
+router.route("/product/:id").get(Products.getProduct);
+router
+   .route("/admin/product")
+   .post(Isauthentication, authoriseRoles("admin"), Products.createProduct);
+router
+   .route("/admin/product/:id")
+   .delete(Isauthentication, authoriseRoles("admin"), Products.deleteProduct)
+   .patch(Isauthentication, authoriseRoles("admin"), Products.UpdateProduct);
+
+router.route("/review").patch(Isauthentication, Products.createProductReview);
+// router.get("/products",Isauthentication,authoriseRoles("admin"), Products.getAllProducts)
+
+module.exports = router;
