@@ -157,6 +157,22 @@ const UpdateProfile = catchErrorAsync(async (req, res, next) => {
    });
 });
 
+const UpdateUserRole = catchErrorAsync(async (req, res, next) => {
+   const Update = {
+      name: req.body.name,
+      email: req.body.email,
+      role: req.body.role,
+   };
+   const user = await User.findByIdAndUpdate(req.params.id, Update, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+   });
+   res.status(200).json({
+      status: true,
+   });
+});
+
 const getAllUser = catchErrorAsync(async (req, res, next) => {
    const users = await User.find();
    res.status(200).json({
@@ -173,6 +189,21 @@ const getSingleUser = catchErrorAsync(async (req, res, next) => {
    });
 });
 
+const deleteUser = catchErrorAsync(async (req, res, next) => {
+   const user = await User.findById(req.params.id);
+
+   if (!user) {
+      return next(new AppError("bunday idli user mavjud emas", 404));
+   }
+   await user.remove();
+   res.status(200).json({
+      status: true,
+      message: "user deleted",
+   });
+});
+
+const dlete = catchErrorAsync(async (req, res, next) => {});
+
 module.exports = {
    registerUser,
    Login,
@@ -184,4 +215,6 @@ module.exports = {
    UpdateProfile,
    getAllUser,
    getSingleUser,
+   deleteUser,
+   UpdateUserRole,
 };

@@ -17,6 +17,8 @@ router
    .get(Isauthentication, authoriseRoles("admin"), UserController.getAllUser);
 router
    .route("/admin/user/:id")
-   .get(Isauthentication, authoriseRoles("admin"), UserController.getSingleUser);
+   .get(Isauthentication, authoriseRoles("admin"), UserController.getSingleUser)
+   .patch(Isauthentication, authoriseRoles("admin"), UserController.UpdateUserRole)
+   .delete(Isauthentication, authoriseRoles("admin"), UserController.deleteUser);
 
 module.exports = router;
