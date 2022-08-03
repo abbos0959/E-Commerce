@@ -16,6 +16,10 @@ router
    .patch(Isauthentication, authoriseRoles("admin"), Products.UpdateProduct);
 
 router.route("/review").patch(Isauthentication, Products.createProductReview);
+router
+   .route("/reviews")
+   .get(Products.getProductReviews)
+   .delete(Isauthentication, Products.deleteReview);
 // router.get("/products",Isauthentication,authoriseRoles("admin"), Products.getAllProducts)
 
 module.exports = router;

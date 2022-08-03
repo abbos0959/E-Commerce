@@ -113,6 +113,32 @@ const deleteReview = catchErrorAsync(async (req, res, next) => {
    if (!product) {
       return next(new AppError("bunday product mavjud emas", 404));
    }
+
+   const reviews = product.reviews.filter((val) => val._id.toString() !== req.query.id.toString());
+
+   let avg = 0;
+
+   reviews.forEach((val) => (avg += val.rating));
+   let ratings = 0;
+   if (reviews.length == 0) {
+      ratings = 0;
+   } else {
+      ratings = avg / reviews.length;
+   }
+   const numOfReviews = reviews.length;
+
+   await ProductModel.findByIdAndUpdate(
+      req.query.productId,
+      {
+         reviews,
+         ratings,
+         numOfReviews,
+      },
+      { new: true, runValidators: true, useFindAndModify: false }
+   );
+   res.status(200).json({
+      status: true,
+   });
 });
 module.exports = {
    getAllProducts,
@@ -122,4 +148,5 @@ module.exports = {
    UpdateProduct,
    createProductReview,
    getProductReviews,
+   deleteReview,
 };
