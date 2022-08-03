@@ -67,14 +67,11 @@ const createProductReview = catchErrorAsync(async (req, res, next) => {
 
    const product = await ProductModel.findById(productId);
 
-   const isReviewed = product.reviews.find(
-      (rev) => rev.user.toString() === req.user._id.toString()
-   );
+   const isReviewed = product.reviews.find((rev) => rev.user === req.user._id);
 
    if (isReviewed) {
       product.reviews.forEach((rev) => {
-         if (rev.user.toString() === req.user._id.toString())
-            (rev.rating = rating), (rev.comment = comment);
+         if (rev.user === req.user._id) (rev.rating = rating), (rev.comment = comment);
       });
    } else {
       product.reviews.push(review);
@@ -82,7 +79,7 @@ const createProductReview = catchErrorAsync(async (req, res, next) => {
    }
    let avg = 0;
    product.reviews.forEach((rev) => {
-      avg +=  rev.rating;
+      avg += rev.rating;
    });
    console.log(avg);
 
@@ -93,6 +90,30 @@ const createProductReview = catchErrorAsync(async (req, res, next) => {
       success: true,
    });
 });
+
+// productni hamma reviewlarini olib kelish
+const getProductReviews = catchErrorAsync(async (req, res, next) => {
+   const product = await ProductModel.findById(req.query.id);
+
+   if (!product) {
+      return next(new AppError("bunday product mavjud emas", 404));
+   }
+
+   res.status(200).json({
+      status: true,
+      reviews: product.reviews,
+   });
+});
+
+//reviewlarni udalit qilish
+
+const deleteReview = catchErrorAsync(async (req, res, next) => {
+   const product = await ProductModel.findById(req.query.productId);
+
+   if (!product) {
+      return next(new AppError("bunday product mavjud emas", 404));
+   }
+});
 module.exports = {
    getAllProducts,
    getProduct,
@@ -100,4 +121,5 @@ module.exports = {
    deleteProduct,
    UpdateProduct,
    createProductReview,
+   getProductReviews,
 };

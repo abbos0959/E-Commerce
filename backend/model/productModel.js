@@ -3,7 +3,7 @@ const productSchema = new mongoose.Schema({
    name: {
       type: String,
       required: [true, "Iltimos product kiriting"],
-      trim:true
+      trim: true,
    },
    description: {
       type: String,
