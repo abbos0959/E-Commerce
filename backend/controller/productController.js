@@ -59,7 +59,7 @@ const UpdateProduct = catchErrorAsync(async (req, res) => {
 const createProductReview = catchErrorAsync(async (req, res, next) => {
    const { rating, comment, productId } = req.body;
    const review = {
-      user: req.user_id,
+      user: req.user._id,
       name: req.user.name,
       rating: Number(rating),
       comment,
@@ -67,11 +67,14 @@ const createProductReview = catchErrorAsync(async (req, res, next) => {
 
    const product = await ProductModel.findById(productId);
 
-   const isReviewed = product.reviews.find((rev) => rev.user === req.user._id);
+   const isReviewed = product.reviews.find(
+      (rev) => rev.user.toString() === req.user._id.toString()
+   );
 
    if (isReviewed) {
       product.reviews.forEach((rev) => {
-         if (rev.user === req.user._id) (rev.rating = rating), (rev.comment = comment);
+         if (rev.user.toString() === req.user._id.toString())
+            (rev.rating = rating), (rev.comment = comment);
       });
    } else {
       product.reviews.push(review);
