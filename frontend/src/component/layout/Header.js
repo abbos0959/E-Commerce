@@ -7,7 +7,7 @@ export const Header = () => {
       <ReactNavbar
          logo={logo}
          burgerColorHover="#eb4034"
-         navColor1="rgba(0,0,0,0.4)"
+         navColor1="white"
          logoWidth="20vmax"
          logoHoverSize="10px"
          logoHoverColor="10px"
