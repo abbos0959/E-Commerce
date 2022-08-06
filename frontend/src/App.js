@@ -4,6 +4,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WebFont from "webfontloader";
 import { Footer } from "./component/layout/Footer";
+import { Home } from "./component/layout/Home";
 
 function App() {
    useEffect(() => {
@@ -13,8 +14,11 @@ function App() {
    }, []);
    return (
       <BrowserRouter>
-         <Header />
-         <Footer />
+      <Header/>
+         <Routes>
+            <Route path="/" element={<Home />} />
+         </Routes>
+         <Footer/>
       </BrowserRouter>
    );
 }
